@@ -53,10 +53,7 @@
 		</div>
 		<script>
 		function ajax(url, callback) {
-			this.getRequest = function() {
-				return window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : window.XMLHttpRequest ? new XMLHttpRequest : false
-			}
-			var req = getRequest();
+			var req = new XMLHttpRequest;
 			req.onreadystatechange = function() {
 				if (req.readyState == 4 && req.status == 200) {
 					callback(JSON.parse(req.responseText));
