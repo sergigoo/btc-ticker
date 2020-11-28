@@ -1,1 +1,5 @@
 Just a simple BTC ticker designed for the Visionect 13" display.
+
+You can set the update frequency of the ticker with the GET parameter updateFreq, and the battery/temperature with deviceFreq.
+
+Example: https://vladc.github.io/btc-ticker/?updateFreq=90&deviceFreq=300
