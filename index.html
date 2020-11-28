@@ -41,6 +41,14 @@
 			.price {
 				font-size: 12em;
 			}
+			
+			.footer {
+				position: absolute; 
+				bottom: 0;
+				right: 0;
+				font-size: 0.6em;
+				padding-right:2px;
+			}
 		</style>
 	</head>
 	<body>
@@ -50,6 +58,10 @@
 			<div class="stat">change</div> <div class="stat_value" id="change"></div>
 			<div class="stat">low</div> <div class="stat_value" id="low"></div>
 			<div class="stat">high</div> <div class="stat_value" id="high"></div>
+		</div>
+		<div class="footer">
+			<span id="battery"></span>
+			<span id="temp"></span>
 		</div>
 		<script>
 		function ajax(url, callback) {
@@ -67,16 +79,61 @@
 			document.getElementById(element).textContent = text
 		}
 
+		function getSearchParameters() {
+			var prmstr = window.location.search.substr(1);
+			return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
+		}
+
+		function transformToAssocArray( prmstr ) {
+			var params = {};
+			var prmarr = prmstr.split("&");
+			for ( var i = 0; i < prmarr.length; i++) {
+				var tmparr = prmarr[i].split("=");
+				params[tmparr[0]] = tmparr[1];
+			}
+			return params;
+		}
+		
+		var getConfig = getSearchParameters(); 
+
 		function ticker() {
 			ajax("https://www.bitstamp.net/api/ticker/btcusd", function (data) {
 				updateById("price", data.bid);
-				updateById("change", (data.bid > data.open ? "+" : "") + (data.bid-data.open).toPrecision(4) + " (" + (((data.bid-data.open)/data.bid) * 100).toPrecision(4) + "%)");
+				updateById("change", (data.bid > data.open ? "+" : "") + (data.bid-data.open).toFixed(2) + " (" + (((data.bid-data.open)/data.bid) * 100).toFixed(2) + "%)");
 				updateById("low", data.low);
 				updateById("high", data.high);
 			})
 		};
-		setInterval("ticker()", 80000);
+
+		var updateFreq = 90; // Refresh ticker values every n seconds
+		if(getConfig.hasOwnProperty('updateFreq')) {
+			updateFreq = getConfig.updateFreq;
+		}
+
+		if(updateFreq > 0) {
+			setInterval("ticker()", updateFreq*1000);
+		}
 		ticker();
+
+		function deviceInfo() {
+			var s = okular.DevicesStatus()[okular.session_uuid]
+            if (typeof(okular) !== "undefined") {
+				updateById("battery", okular.BatteryLevel + "%")
+				updateById("temp", okular.Temperature + "°C")
+			}
+		}
+
+		var deviceFreq = 300; // Refresh battery and temperature every n seconds
+		if(getConfig.hasOwnProperty('deviceFreq')) {
+			deviceFreq = getConfig.deviceFreq;
+		}
+
+		if(typeof okular != "undefined") {
+			if(deviceFreq > 0) {
+				setInterval("deviceInfo()", deviceFreq*1000);
+			}
+			deviceInfo();
+		}
 		</script>
 	</body>
 </html>
