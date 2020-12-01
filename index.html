@@ -117,10 +117,8 @@
 
 		function deviceInfo() {
 			var s = okular.DevicesStatus()[okular.session_uuid]
-            if (typeof(okular) !== "undefined") {
-				updateById("battery", okular.BatteryLevel + "%")
-				updateById("temp", okular.Temperature + "°C")
-			}
+			updateById("battery", okular.BatteryLevel + "%")
+			updateById("temp", okular.Temperature + "°C")
 		}
 
 		var deviceFreq = 300; // Refresh battery and temperature every n seconds
@@ -128,7 +126,7 @@
 			deviceFreq = getConfig.deviceFreq;
 		}
 
-		if(typeof okular != "undefined") {
+		if(typeof(okular) !== "undefined") {
 			if(deviceFreq > 0) {
 				setInterval("deviceInfo()", deviceFreq*1000);
 			}
