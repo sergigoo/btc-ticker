@@ -79,6 +79,10 @@
 			document.getElementById(element).textContent = text
 		}
 
+		function numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+
 		function getSearchParameters() {
 			var prmstr = window.location.search.substr(1);
 			return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
@@ -98,10 +102,10 @@
 
 		function ticker() {
 			ajax("https://www.bitstamp.net/api/ticker/btcusd", function (data) {
-				updateById("price", data.bid);
-				updateById("change", (data.bid > data.open ? "+" : "") + (data.bid-data.open).toFixed(2) + " (" + (((data.bid-data.open)/data.bid) * 100).toFixed(2) + "%)");
-				updateById("low", data.low);
-				updateById("high", data.high);
+				updateById("price", numberWithCommas(data.bid));
+				updateById("change", (data.bid > data.open ? "+" : "") + numberWithCommas((data.bid-data.open).toFixed(2)) + " (" + (((data.bid-data.open)/data.bid) * 100).toFixed(2) + "%)");
+				updateById("low", numberWithCommas(data.low));
+				updateById("high", numberWithCommas(data.high));
 			})
 		};
 
